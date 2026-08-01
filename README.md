@@ -20,10 +20,17 @@ pnpm dev:api
 pnpm dev:web
 ```
 
-Web 开发服务器默认地址为 `http://localhost:5173`，API 健康检查地址为 `http://localhost:3000/health`。
+Web 开发服务器默认地址为 `http://localhost:5173`，API 健康检查地址为 `http://localhost:3100/health`。
 
 ## 设计原则
 
 - 原始学习文件默认只建立索引，不擅自移动、重命名或删除。
 - 用标签、专题和笔记组成虚拟分类，避免破坏原有目录结构。
 - 云同步和微信小程序通过同一套 API 接入；小程序不直接访问电脑磁盘。
+
+## 当前可用功能
+
+- 选择单个文件、多个文件，或通过 Chromium 浏览器（Chrome、Edge）选择整个文件夹。
+- 保留导入文件夹的相对目录层级。
+- 原样保存所有文件；识别 PDF、Word、Excel、PPT、Markdown、文本、图片、音视频及压缩包等常见格式。
+- 单次最多导入 500 个文件，单文件上限为 200 MB。
