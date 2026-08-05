@@ -40,6 +40,8 @@ const queuedFiles = ref<QueuedFile[]>([]);
 const importedFiles = ref<ImportedFile[]>([]);
 const libraryDocuments = ref<LibraryDocument[]>([]);
 const libraryTotal = ref(0);
+const libraryQuery = ref('');
+const libraryKind = ref<DocumentKind | 'all'>('all');
 const activeView = ref<'import' | 'library'>('import');
 const notice = ref('');
 const libraryError = ref('');
@@ -49,6 +51,28 @@ const isLibraryLoading = ref(false);
 const maxFiles = 500;
 
 const totalBytes = computed(() => queuedFiles.value.reduce((total, item) => total + item.file.size, 0));
+const libraryKinds: Array<{ value: DocumentKind | 'all'; label: string }> = [
+  { value: 'all', label: '全部类型' },
+  { value: 'pdf', label: 'PDF' },
+  { value: 'word', label: 'Word' },
+  { value: 'spreadsheet', label: '表格' },
+  { value: 'presentation', label: '演示文稿' },
+  { value: 'markdown', label: 'Markdown' },
+  { value: 'text', label: '文本' },
+  { value: 'image', label: '图片' },
+  { value: 'video', label: '视频' },
+  { value: 'audio', label: '音频' },
+  { value: 'archive', label: '压缩包' },
+  { value: 'other', label: '其他' },
+];
+const filteredLibraryDocuments = computed(() => {
+  const query = libraryQuery.value.trim().toLocaleLowerCase();
+  return libraryDocuments.value.filter((item) => {
+    const matchesKind = libraryKind.value === 'all' || item.kind === libraryKind.value;
+    const matchesQuery = !query || (item.name + ' ' + item.relativePath).toLocaleLowerCase().includes(query);
+    return matchesKind && matchesQuery;
+  });
+});
 
 function documentKindFor(fileName: string): DocumentKind {
   const extension = fileName.split('.').pop()?.toLowerCase() ?? '';
@@ -242,11 +266,17 @@ onMounted(() => {
 
       <section class="library-card">
         <div class="library-summary"><strong>{{ libraryTotal }}</strong><span>份已归档资料</span></div>
+        <div class="library-tools">
+          <label class="search-field"><span>搜索资料</span><input v-model="libraryQuery" type="search" placeholder="输入文件名或文件夹名称" /></label>
+          <label class="filter-field"><span>资料类型</span><select v-model="libraryKind"><option v-for="option in libraryKinds" :key="option.value" :value="option.value">{{ option.label }}</option></select></label>
+          <p class="filter-count">显示 {{ filteredLibraryDocuments.length }} / {{ libraryTotal }} 份</p>
+        </div>
         <p v-if="libraryError" class="notice">{{ libraryError }}</p>
         <p v-else-if="isLibraryLoading" class="empty-state">正在读取你的资料库…</p>
         <p v-else-if="!libraryDocuments.length" class="empty-state">还没有导入资料。切换到“导入资料”开始建立你的学习库。</p>
+        <p v-else-if="!filteredLibraryDocuments.length" class="empty-state">没有匹配的资料。可以更换关键词或资料类型。</p>
         <ul v-else class="file-list library-list">
-          <li v-for="item in libraryDocuments" :key="item.id"><span class="type-badge">{{ kindLabel(item.kind) }}</span><div class="file-name"><strong>{{ item.name }}</strong><small>{{ item.relativePath }} · {{ formatSize(item.sizeBytes) }}</small></div><time :datetime="item.importedAt">{{ formatDate(item.importedAt) }}</time></li>
+          <li v-for="item in filteredLibraryDocuments" :key="item.id"><span class="type-badge">{{ kindLabel(item.kind) }}</span><div class="file-name"><strong>{{ item.name }}</strong><small>{{ item.relativePath }} · {{ formatSize(item.sizeBytes) }}</small></div><time :datetime="item.importedAt">{{ formatDate(item.importedAt) }}</time></li>
         </ul>
       </section>
     </section>

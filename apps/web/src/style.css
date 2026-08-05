@@ -83,3 +83,14 @@ h1 { font-size: clamp(2.5rem, 6vw, 5rem); letter-spacing: -.065em; line-height: 
   .library-heading .secondary { width: 100%; }
   .library-list time { display: none; }
 }
+.library-tools { align-items: end; border-bottom: 1px solid #edf0f5; display: grid; gap: 12px; grid-template-columns: minmax(220px, 1fr) 170px auto; margin-top: 22px; padding-bottom: 18px; }
+.search-field, .filter-field { display: grid; gap: 6px; }
+.search-field span, .filter-field span { color: #75829a; font-size: .76rem; font-weight: 700; }
+.search-field input, .filter-field select { background: #fbfcfe; border: 1px solid #dce3ee; border-radius: 8px; color: #25324a; font: inherit; min-height: 38px; padding: 8px 10px; }
+.search-field input:focus, .filter-field select:focus { border-color: #2563eb; outline: 2px solid rgb(37 99 235 / 14%); }
+.filter-count { color: #718098; font-size: .8rem; margin: 0 0 10px; text-align: right; white-space: nowrap; }
+
+@media (max-width: 700px) {
+  .library-tools { align-items: stretch; grid-template-columns: 1fr; }
+  .filter-count { margin: 0; text-align: left; }
+}
