@@ -58,3 +58,28 @@ h1 { font-size: clamp(2.5rem, 6vw, 5rem); letter-spacing: -.065em; line-height: 
   .section-heading .primary { width: 100%; }
   .drop-zone { margin: 10px; min-height: 250px; }
 }
+
+.view-nav { display: flex; gap: 4px; }
+.view-nav button { background: transparent; border: 0; border-radius: 8px; color: #718098; font-size: .88rem; padding: 8px 10px; }
+.view-nav button.active { background: #e7efff; color: #1d4ed8; font-weight: 750; }
+.view-nav span { background: #fff; border-radius: 10px; font-size: .72rem; margin-left: 3px; padding: 2px 6px; }
+.library-page { margin-top: 82px; }
+.library-heading { align-items: end; display: flex; gap: 28px; justify-content: space-between; margin-bottom: 36px; }
+.library-heading h1 { font-size: clamp(2.25rem, 5vw, 4.2rem); margin-bottom: 14px; }
+.library-heading p:last-child { color: #5b6981; line-height: 1.7; margin: 0; }
+.library-card { background: #fff; border: 1px solid #e4eaf3; border-radius: 20px; box-shadow: 0 13px 35px rgb(40 63 99 / 6%); padding: 24px; }
+.library-summary { align-items: baseline; display: flex; gap: 9px; }
+.library-summary strong { color: #2563eb; font-size: 2rem; letter-spacing: -.06em; }
+.library-summary span { color: #6d7b92; font-size: .9rem; }
+.library-list { margin-top: 18px; }
+.library-list time { color: #8190a6; font-size: .78rem; text-align: right; white-space: nowrap; }
+.empty-state { color: #718098; line-height: 1.7; margin: 28px 0 4px; text-align: center; }
+
+@media (max-width: 700px) {
+  .topbar { align-items: flex-start; gap: 12px; }
+  .view-nav { justify-content: flex-end; }
+  .library-page { margin-top: 58px; }
+  .library-heading { align-items: flex-start; flex-direction: column; }
+  .library-heading .secondary { width: 100%; }
+  .library-list time { display: none; }
+}
