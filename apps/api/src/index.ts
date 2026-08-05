@@ -75,6 +75,8 @@ async function discoverExistingDocuments(directory: string): Promise<LibraryDocu
           kind: documentKindFor(entry.name),
           sizeBytes: fileStats.size,
           importedAt: fileStats.birthtime.toISOString(),
+          collectionId: null,
+          tags: [],
         });
       }
     };
@@ -91,6 +93,41 @@ app.addHook('onClose', () => database.close());
 
 app.get('/health', async () => ({ status: 'ok', service: 'learning-library-api' }));
 app.get('/documents', async () => ({ documents: database.listDocuments(), total: database.countDocuments() }));
+app.get('/collections', async () => ({ collections: database.listCollections() }));
+app.get('/tags', async () => ({ tags: database.listTags() }));
+
+app.post('/collections', async (request, reply) => {
+  try {
+    const body = request.body as { name?: unknown };
+    if (typeof body?.name !== 'string') throw new Error('专题名称无效。');
+    return reply.code(201).send({ collection: database.createCollection(body.name) });
+  } catch (error) {
+    return reply.code(400).send({ message: error instanceof Error ? error.message : '无法创建专题。' });
+  }
+});
+
+app.post('/tags', async (request, reply) => {
+  try {
+    const body = request.body as { name?: unknown };
+    if (typeof body?.name !== 'string') throw new Error('标签名称无效。');
+    return reply.code(201).send({ tag: database.createTag(body.name) });
+  } catch (error) {
+    return reply.code(400).send({ message: error instanceof Error ? error.message : '无法创建标签。' });
+  }
+});
+
+app.patch('/documents/:id/organization', async (request, reply) => {
+  try {
+    const { id } = request.params as { id: string };
+    const body = request.body as { collectionId?: unknown; tagIds?: unknown };
+    const collectionId = body.collectionId === null || typeof body.collectionId === 'string' ? body.collectionId : null;
+    const tagIds = Array.isArray(body.tagIds) && body.tagIds.every((tagId) => typeof tagId === 'string') ? body.tagIds : [];
+    database.updateOrganization(id, collectionId, tagIds);
+    return { ok: true };
+  } catch (error) {
+    return reply.code(400).send({ message: error instanceof Error ? error.message : '无法保存归类。' });
+  }
+});
 
 app.post('/imports', async (request, reply) => {
   const importId = randomUUID();
@@ -144,6 +181,8 @@ app.post('/imports', async (request, reply) => {
         kind: documentKindFor(relativePath),
         sizeBytes: fileStats.size,
         importedAt: new Date().toISOString(),
+        collectionId: null,
+        tags: [],
       });
     }
     database.addDocuments(imported);
